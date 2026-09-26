@@ -1,0 +1,17 @@
+# Environment variables & Keys
+.env
+*.env
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
