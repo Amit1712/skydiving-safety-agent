@@ -2,3 +2,4 @@ google-genai>=0.1.0
 rich>=13.0.0
 python-dotenv>=1.0.0
 requests>=2.31.0
+astral>=3.2

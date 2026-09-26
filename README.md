@@ -8,7 +8,10 @@ The agent acts as a safety officer for skydivers: it accepts weather/location pr
 
 ## ✨ Key Features
 
-* **ReAct Agent Architecture:** Uses Gemini function calling to orchestrate multi-step tools (dropzone geocoding, weather/wind lookup, AFF student safety limits).
+* **ReAct Agent Architecture:** Uses Gemini function calling to orchestrate multi-step tools (dropzone geocoding, weather/wind lookup, METAR/TAF aviation weather, hourly forecasts, daylight checks, VMC validation, AFF student safety limits).
+* **Advanced Meteorological Tools (Phase 2):** METAR/TAF via CheckWX, hourly jump-time forecasts, civil twilight/daylight verification, and cloud ceiling + visibility (VMC) checks.
+* **Improved Dropzone Geocoding:** Curated dropzone registry, OpenStreetMap/Nominatim search, and confidence-scored results.
+* **Dual Wind Units:** Wind speed and gusts reported in both km/h and knots.
 * **Rich Terminal UI:** Interactive CLI with colored output panels, loading spinners, and optional debug logging.
 * **Safety Guardrails & Verdict System:** Enforces explicit safety verdicts and formats clear output:
   * 🟩 **`VERDICT: GO ✅`** — Atmospheric conditions are within safe operational limits.
@@ -59,6 +62,8 @@ The agent requires a `.env` file in the project root. Copy `.env.sample` or let 
 GEMINI_API_KEY=your_gemini_api_key_here
 OPEN_METEO_BASE_URL=https://api.open-meteo.com/v1/forecast
 GEOCODING_BASE_URL=https://geocoding-api.open-meteo.com/v1/search
+CHECKWX_API_KEY=your_checkwx_api_key_here
+CHECKWX_BASE_URL=https://api.checkwx.com
 ```
 
 | Variable | Required | Description |
@@ -66,6 +71,8 @@ GEOCODING_BASE_URL=https://geocoding-api.open-meteo.com/v1/search
 | `GEMINI_API_KEY` | Yes | Google Gemini API key |
 | `OPEN_METEO_BASE_URL` | Yes | Open-Meteo forecast API base URL |
 | `GEOCODING_BASE_URL` | Yes | Open-Meteo geocoding API base URL |
+| `CHECKWX_API_KEY` | For METAR/TAF/VMC | CheckWX aviation weather API key ([checkwxapi.com](https://www.checkwxapi.com/)) |
+| `CHECKWX_BASE_URL` | No | CheckWX API base URL (defaults to `https://api.checkwx.com`) |
 
 Environment variables are loaded via `python-dotenv` in the weather and geocoding services.
 
@@ -105,13 +112,18 @@ Running `python agent.py` without `-i` or `-p` prints the CLI help.
 
 ## 🧰 Agent Tools
 
-The agent has access to three function-calling tools defined in `tools/skydiving_tools.py`:
+The agent has access to eight function-calling tools defined in `tools/skydiving_tools.py`:
 
 | Tool | Purpose |
 |------|---------|
-| `get_dz_coordinates_tool` | Resolve a dropzone or location name to latitude/longitude via Open-Meteo Geocoding |
-| `get_weather_and_wind_tool` | Fetch current temperature, wind speed, and gusts for given coordinates |
-| `get_aff_student_safety_limits_tool` | Return AFF student wind/gust safety thresholds (25 km/h wind, 30 km/h gusts) |
+| `get_dz_coordinates_tool` | Resolve a dropzone name via curated registry, Nominatim/OSM, and Open-Meteo with confidence scoring |
+| `get_weather_and_wind_tool` | Fetch current temperature, wind speed/gusts (km/h and knots) for given coordinates |
+| `get_hourly_forecast_tool` | Hourly forecast for a specific jump time (e.g. `2026-09-26T15:00`) |
+| `get_aviation_weather_tool` | METAR and TAF from nearest aviation station via CheckWX |
+| `get_daylight_times_tool` | Sunrise, sunset, and civil twilight for a dropzone date |
+| `check_jump_daylight_tool` | Verify a planned jump time is within civil daylight hours |
+| `check_vmc_conditions_tool` | Cloud ceiling and visibility check against AFF VMC minimums |
+| `get_aff_student_safety_limits_tool` | Return AFF student wind/gust/VMC safety thresholds |
 
 ---
 
@@ -128,9 +140,15 @@ skydiving-safety-agent/
 ├── services/
 │   ├── agent_service.py        # ReAct loop, tool execution, and output guardrails
 │   ├── gemini_service.py       # GenAI client wrapper and chat session setup
-│   ├── geocoding_service.py    # Dropzone/location geocoding via Open-Meteo
-│   ├── weather_service.py      # Current weather and wind data via Open-Meteo
+│   ├── geocoding_service.py    # Dropzone geocoding (registry + Nominatim + Open-Meteo)
+│   ├── weather_service.py      # Current and hourly weather/wind via Open-Meteo
+│   ├── aviation_weather_service.py  # METAR/TAF via CheckWX
+│   ├── daylight_service.py     # Sunrise/sunset and civil twilight calculations
+│   ├── vmc_service.py          # Cloud ceiling and visibility VMC checks
+│   ├── conversions.py          # km/h ↔ knots conversion helpers
 │   └── http_client.py          # Shared HTTP client with timeout and error handling
+├── data/
+│   └── known_dropzones.json    # Curated dropzone registry for high-confidence geocoding
 └── tools/
     └── skydiving_tools.py      # Tool function declarations and TOOLS_MAP registry
 ```
@@ -152,7 +170,8 @@ Default settings live in `config.py`:
 * `google-genai` — Google Gemini SDK
 * `rich` — Terminal UI (panels, colors, spinners)
 * `python-dotenv` — Load `.env` configuration
-* `requests` — HTTP calls to Open-Meteo APIs
+* `requests` — HTTP calls to Open-Meteo, Nominatim, and CheckWX APIs
+* `astral` — Sunrise/sunset and civil twilight calculations
 
 ---
 

@@ -21,11 +21,16 @@ class HttpClient:
     def __init__(self, base_url: str):
         self.base_url = base_url
 
-    def get(self, url: str, params: dict[str, Any] | None = None) -> Any:
+    def get(
+        self,
+        url: str,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> Any:
         """Make a GET request to the API."""
         try:
             logger.info(f"Fetching URL: {url} with params: {params}")
-            response = requests.get(url, params=params, timeout=10)
+            response = requests.get(url, params=params, headers=headers, timeout=10)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.Timeout:

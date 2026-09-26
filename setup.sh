@@ -25,6 +25,8 @@ if [ ! -f ".env" ]; then
 GEMINI_API_KEY=your_gemini_api_key_here
 OPEN_METEO_BASE_URL=https://api.open-meteo.com/v1/forecast
 GEOCODING_BASE_URL=https://geocoding-api.open-meteo.com/v1/search
+CHECKWX_API_KEY=your_checkwx_api_key_here
+CHECKWX_BASE_URL=https://api.checkwx.com
 EOT
     echo "🔑 Please edit the '.env' file and add your GEMINI_API_KEY."
 else

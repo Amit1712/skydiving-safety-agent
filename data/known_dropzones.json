@@ -1,0 +1,151 @@
+[
+  {
+    "id": "go-jump-dead-sea",
+    "name": "Go Jump Dead Sea",
+    "aliases": [
+      "go jump dead sea",
+      "gojump dead sea",
+      "gjds",
+      "dead sea dropzone",
+      "masada dropzone",
+      "masada",
+      "dead sea",
+      "ים המלח"
+    ],
+    "latitude": 31.2058,
+    "longitude": 35.3652,
+    "country": "Israel",
+    "nearest_icao": "OJAM",
+    "region": "Negev"
+  },
+  {
+    "id": "paradive",
+    "name": "Paradive",
+    "aliases": [
+      "paradive",
+      "paradive habonim",
+      "paradive skydiving",
+      "habonim dropzone",
+      "habonim airfield",
+      "חוף הבונים",
+      "פרדייב"
+    ],
+    "latitude": 32.6499,
+    "longitude": 34.9331,
+    "country": "Israel",
+    "nearest_icao": "LLBO",
+    "region": "Carmel Coast"
+  },
+  {
+    "id": "sky-kef-beer-sheva",
+    "name": "Sky Kef Beer Sheva",
+    "aliases": [
+      "sky kef beer sheva",
+      "sky kef",
+      "kef beer sheva",
+      "kef dropzone",
+      "sde teman",
+      "beer sheva",
+      "סקיי כיף"
+    ],
+    "latitude": 31.287,
+    "longitude": 34.723,
+    "country": "Israel",
+    "nearest_icao": "LLBS",
+    "region": "Beer Sheva"
+  },
+  {
+    "id": "skydive-perris",
+    "name": "Skydive Perris",
+    "aliases": [
+      "skydive perris",
+      "perris valley skydiving",
+      "perris dropzone"
+    ],
+    "latitude": 33.7812,
+    "longitude": -117.2197,
+    "country": "United States",
+    "nearest_icao": "KL65",
+    "region": "California"
+  },
+  {
+    "id": "skydive-chicago",
+    "name": "Skydive Chicago",
+    "aliases": [
+      "skydive chicago",
+      "ottawa dropzone"
+    ],
+    "latitude": 41.2978,
+    "longitude": -88.8578,
+    "country": "United States",
+    "nearest_icao": "KLOT",
+    "region": "Illinois"
+  },
+  {
+    "id": "skydive-dubai",
+    "name": "Skydive Dubai",
+    "aliases": [
+      "skydive dubai",
+      "palm dropzone dubai"
+    ],
+    "latitude": 25.0902,
+    "longitude": 55.1353,
+    "country": "United Arab Emirates",
+    "nearest_icao": "OMDB",
+    "region": "Dubai"
+  },
+  {
+    "id": "empuriabrava",
+    "name": "Skydive Empuriabrava",
+    "aliases": [
+      "skydive empuriabrava",
+      "empuriabrava",
+      "empuriabrava dropzone"
+    ],
+    "latitude": 42.2603,
+    "longitude": 3.1072,
+    "country": "Spain",
+    "nearest_icao": "LEAP",
+    "region": "Catalonia"
+  },
+  {
+    "id": "interlaken",
+    "name": "Skydive Interlaken",
+    "aliases": [
+      "skydive interlaken",
+      "interlaken dropzone"
+    ],
+    "latitude": 46.6863,
+    "longitude": 7.8632,
+    "country": "Switzerland",
+    "nearest_icao": "LSMM",
+    "region": "Bern"
+  },
+  {
+    "id": "skydive-snohomish",
+    "name": "Skydive Snohomish",
+    "aliases": [
+      "skydive snohomish",
+      "harvey field dropzone"
+    ],
+    "latitude": 47.9078,
+    "longitude": -122.0986,
+    "country": "United States",
+    "nearest_icao": "KPAE",
+    "region": "Washington"
+  },
+  {
+    "id": "skydive-spaceland",
+    "name": "Skydive Spaceland Houston",
+    "aliases": [
+      "skydive spaceland",
+      "spaceland houston",
+      "spaceland dropzone"
+    ],
+    "latitude": 29.6222,
+    "longitude": -95.6567,
+    "country": "United States",
+    "nearest_icao": "KTME",
+    "region": "Texas"
+  }
+]

@@ -8,7 +8,7 @@ from google import genai
 from google.genai import types
 
 import config
-from tools.skydiving_tools import TOOLS_MAP
+from tools.skydiving_tools import TOOLS_LIST
 
 
 class GeminiService:
@@ -32,7 +32,7 @@ class GeminiService:
         """
         config_params = types.GenerateContentConfig(
             system_instruction=config.SYSTEM_INSTRUCTION,
-            tools=list(TOOLS_MAP.values()),
+            tools=TOOLS_LIST,
             temperature=config.TEMPERATURE,
         )
         return self.client.chats.create(

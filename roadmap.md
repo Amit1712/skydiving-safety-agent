@@ -12,15 +12,19 @@ This roadmap outlines the planned future enhancements for the Skydiving Safety A
 
 ---
 
-## 🛠️ Phase 2: Advanced Domain Tools & Meteorological Data
-- [ ] **Aviation Weather Integration (METAR / TAF):**
+## 🛠️ Phase 2: Advanced Domain Tools & Meteorological Data (Completed ✅)
+- [x] **Aviation Weather Integration (METAR / TAF):**
   - Add tool to query aviation weather stations near dropzones (using CheckWX API).
-- [ ] **Hourly Weather Forecast:**
+- [x] **Hourly Weather Forecast:**
   - Support specific jump timestamps (e.g., *"Can I jump today at 15:00?"*).
-- [ ] **Sun Phase Calculator (Daylight Verification):**
+- [x] **Sun Phase Calculator (Daylight Verification):**
   - Verify civil twilight / sunset times to ensure jumps occur during daylight hours.
-- [ ] **Cloud Ceiling & Visibility Check (VMC Rules):**
+- [x] **Cloud Ceiling & Visibility Check (VMC Rules):**
   - Validate cloud base heights against minimum altitude safety requirements.
+- [x] **Improved Dropzone Geocoding:**
+  - Curated dropzone registry, Nominatim/OSM search, and confidence scoring.
+- [x] **Wind in Knots:**
+  - All wind outputs now include both km/h and knots.
 
 ---
 
