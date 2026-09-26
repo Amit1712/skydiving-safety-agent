@@ -34,7 +34,6 @@ class AgentService:
         ):
             output_text += "\n\nVERDICT: NO-GO"
 
-        # בדיקה ממוקדת ל-GO
         elif any(
             keyword in upper_text
             for keyword in [
