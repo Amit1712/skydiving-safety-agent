@@ -1,155 +1,161 @@
-# 🪂 Skydiving Safety Autonomous Agent
+# 🪂 Skydiving Safety Agent CLI
 
-An intelligent, autonomous AI Agent built with Python and the **Google Gemini SDK** (`google-genai`). 
+An AI-powered autonomous agent built with the **Google GenAI SDK (`google-genai`)**, **Gemini**, and **Rich CLI**.
 
-The agent accepts skydiving queries for any dropzone worldwide, autonomously searches for location coordinates, checks real-time weather and wind conditions, cross-references them against safety regulations (e.g., student AFF safety limits), and delivers a clear **Go / No-Go** safety verdict.
-
----
-
-## 🏗️ Architecture & Project Structure
-
-The project follows a clean, modular 3-tier software architecture (**Separation of Concerns**):
-
-```text
-skydiving-agent/
-│
-├── services/                 # 🌐 API Layer (Deterministic HTTP & External APIs)
-│   ├── http_client.py        # Generic HTTP client with robust Error Handling & Timeouts
-│   ├── weather_service.py     # Open-Meteo Weather API integration
-│   ├── geocoding_service.py   # Open-Meteo Geocoding API integration
-│   └── gemini_service.py     # Gemini Client lifecycle & chat orchestration
-│
-├── tools/                    # 🛠️ Agent Tool Layer (Wrappers exposed to Gemini)
-│   └── skydiving_tools.py    # Function definitions, JSON parsing & error formatting
-│
-├── agent.py                  # 🚀 Core CLI Execution & Interactive Agent Loop
-├── .env                      # Environment variables (API Keys)
-├── requirements.txt          # Python dependencies
-└── README.md
-
-```
+The agent acts as a safety officer for skydivers: it accepts weather/location prompts, autonomously invokes tool functions (ReAct pattern) via Open-Meteo APIs to evaluate wind limits and atmospheric conditions, and presents a stylized safety verdict with color-coded panels and icons.
 
 ---
 
+## ✨ Key Features
 
-
-## ✨ Features & Capabilities
-
-- **Autonomous Tool Calling (ReAct Loop):** The LLM independently determines which tools to invoke and in what order based on context.
-- **Geocoding Support:** Accepts human-readable locations (e.g., *"Dead Sea dropzone"*, *"Prague"*) and resolves them to exact coordinates.
-- **Real-Time Weather Integration:** Fetches live temperature, wind speed, and wind gusts using the free **Open-Meteo API** (no API keys required for weather/geocoding).
-- **Safety Decision Logic:** Cross-references wind data against predefined safety thresholds for AFF students.
-- **Resilient Error Handling:** External API errors (timeouts, 404s) are caught and formatted into structured JSON error payloads, preventing LLM crashes and allowing the agent to gracefully adapt.
-- **Flexible CLI:** Supports single-prompt queries via CLI flags or a continuous interactive chat session.
+* **ReAct Agent Architecture:** Uses Gemini function calling to orchestrate multi-step tools (dropzone geocoding, weather/wind lookup, AFF student safety limits).
+* **Rich Terminal UI:** Interactive CLI with colored output panels, loading spinners, and optional debug logging.
+* **Safety Guardrails & Verdict System:** Enforces explicit safety verdicts and formats clear output:
+  * 🟩 **`VERDICT: GO ✅`** — Atmospheric conditions are within safe operational limits.
+  * 🟥 **`VERDICT: NO-GO ❌`** — Conditions exceed maximum safety thresholds (e.g., strong wind gusts).
+  * 🟨 **Clarification / Warning** — Appends a note when the model response lacks an explicit verdict.
+* **Interactive & Single Query Modes:** Supports memory-persistent chat sessions (`-i`) or single-turn prompts (`-p`).
 
 ---
 
+## 🛠️ Quick Start & Automated Setup
 
+### Option 1: One-Click Automated Setup (Recommended)
 
-## 🛠️ Prerequisites & Installation
-
-1. **Clone or navigate to the project directory:**
+Run the included setup script to create the virtual environment, install dependencies, and generate a `.env` file if one does not exist:
 
 ```bash
-cd skydiving-agent
-
+git clone https://github.com/Amit1712/skydiving-safety-agent.git
+cd skydiving-safety-agent
+chmod +x setup.sh
+./setup.sh
 ```
 
-1. **Create and activate a Python virtual environment:**
+### Option 2: Manual Installation
 
 ```bash
-python -m venv venv
+# 1. Clone & enter repository
+git clone https://github.com/Amit1712/skydiving-safety-agent.git
+cd skydiving-safety-agent
 
-# Mac/Linux:
+# 2. Create and activate virtual environment
+python3 -m venv venv
 source venv/bin/activate
 
-# Windows (PowerShell):
-.\venv\Scripts\Activate.ps1
+# 3. Install dependencies
+pip install -r requirements.txt
 
+# 4. Create .env file from sample
+cp .env.sample .env
 ```
 
-1. **Install dependencies:**
+---
 
-```bash
-pip install google-genai python-dotenv requests
+## 🔑 Environment Variables
 
-```
-
-1. **Configure Environment Variables:**
-
-Create a `.env` file in the project root:
+The agent requires a `.env` file in the project root. Copy `.env.sample` or let `setup.sh` create one for you, then set your API key:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
-
+OPEN_METEO_BASE_URL=https://api.open-meteo.com/v1/forecast
+GEOCODING_BASE_URL=https://geocoding-api.open-meteo.com/v1/search
 ```
 
-> 💡 *Get a free API key from [Google AI Studio](https://aistudio.google.com/?utm_source=gemini).*
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GEMINI_API_KEY` | Yes | Google Gemini API key |
+| `OPEN_METEO_BASE_URL` | Yes | Open-Meteo forecast API base URL |
+| `GEOCODING_BASE_URL` | Yes | Open-Meteo geocoding API base URL |
+
+Environment variables are loaded via `python-dotenv` in the weather and geocoding services.
 
 ---
-
-
 
 ## 🚀 Usage
 
+Make sure your virtual environment is active (`source venv/bin/activate`):
 
+### Interactive Chat Mode
 
-### 1. Single Prompt Execution (`-p` / `--prompt`)
-
-Pass a query directly from your terminal:
-
-```bash
-python agent.py -p "I am an AFF student. Can I jump right now at the Dead Sea dropzone?"
-
-```
-
-
-
-### 2. Interactive CLI Mode (`-i` / `--interactive`)
-
-Run a continuous chat loop in the terminal:
+Start an interactive session with full conversation memory:
 
 ```bash
 python agent.py -i
-
 ```
 
-**Example Conversation:**
+### Single Prompt Mode
+
+Run a quick query directly from the command line:
+
+```bash
+python agent.py -p "Is it safe to jump at Go Jump Dead Sea today?"
+```
+
+### Debug Mode
+
+Enable verbose logging to observe tool calls, function execution, and API responses:
+
+```bash
+python agent.py -p "Check wind conditions for Go Jump Dead Sea" -d
+```
+
+Running `python agent.py` without `-i` or `-p` prints the CLI help.
+
+---
+
+## 🧰 Agent Tools
+
+The agent has access to three function-calling tools defined in `tools/skydiving_tools.py`:
+
+| Tool | Purpose |
+|------|---------|
+| `get_dz_coordinates_tool` | Resolve a dropzone or location name to latitude/longitude via Open-Meteo Geocoding |
+| `get_weather_and_wind_tool` | Fetch current temperature, wind speed, and gusts for given coordinates |
+| `get_aff_student_safety_limits_tool` | Return AFF student wind/gust safety thresholds (25 km/h wind, 30 km/h gusts) |
+
+---
+
+## 📁 Project Structure
 
 ```text
-🪂 Skydiving Safety Agent - Interactive CLI Mode
-Type 'exit' or 'quit' to stop.
-==================================================
-
-[You]: Can I jump right now at the Dead Sea as an AFF student?
-
-🤖 [Agent Decision]: Calling Tool 'get_dz_coordinates_tool' with args {'location_name': 'Dead Sea'}
-📡 [Tool Result]: {"status": "success", "data": {"latitude": 31.05, "longitude": 35.36}}
-
-🤖 [Agent Decision]: Calling Tool 'get_weather_and_wind_tool' with args {'latitude': 31.05, 'longitude': 35.36}
-📡 [Tool Result]: {"status": "success", "data": {"wind_speed_kmh": 14.2, "wind_gusts_kmh": 18.5}}
-
-🤖 [Agent Decision]: Calling Tool 'get_aff_student_safety_limits_tool' with args {}
-📡 [Tool Result]: {"status": "success", "data": {"max_allowed_wind_speed_kmh": 25}}
-
-[Agent Final Answer]:
-Based on current weather data at the Dead Sea dropzone:
-- Surface Wind: 14.2 km/h (Gusts up to 18.5 km/h)
-- AFF Student Limit: 25 km/h
-
-Verdict: GO 🪂
-Current wind conditions are well within your student safety limits.
-
+skydiving-safety-agent/
+├── agent.py                    # CLI entry point, Rich UI, and argument parsing
+├── config.py                   # System instructions, model settings, and app title
+├── setup.sh                    # One-click environment setup script
+├── requirements.txt            # Project dependencies
+├── .env.sample                 # Environment variables template
+├── roadmap.md                  # Planned features and product roadmap
+├── services/
+│   ├── agent_service.py        # ReAct loop, tool execution, and output guardrails
+│   ├── gemini_service.py       # GenAI client wrapper and chat session setup
+│   ├── geocoding_service.py    # Dropzone/location geocoding via Open-Meteo
+│   ├── weather_service.py      # Current weather and wind data via Open-Meteo
+│   └── http_client.py          # Shared HTTP client with timeout and error handling
+└── tools/
+    └── skydiving_tools.py      # Tool function declarations and TOOLS_MAP registry
 ```
 
 ---
 
+## ⚙️ Configuration
 
+Default settings live in `config.py`:
 
-## ⚙️ Key Technical Stack
+* **Model:** `gemini-3.1-flash-lite`
+* **Temperature:** `0.0`
+* **System instruction:** Requires the agent to verify location, weather, and safety limits via tools, and end every response with `VERDICT: [GO / NO-GO]`.
 
-- **Language:** Python 3.10+
-- **LLM Engine:** Google Gemini (`gemini-3.1-flash-lite`) via `google-genai` SDK
-- **Data & Geocoding APIs:** Open-Meteo REST APIs
-- **Design Patterns:** ReAct (Reason + Act), 3-Tier Layered Architecture, Structured Output Parsing
+---
 
+## 📦 Dependencies
+
+* `google-genai` — Google Gemini SDK
+* `rich` — Terminal UI (panels, colors, spinners)
+* `python-dotenv` — Load `.env` configuration
+* `requests` — HTTP calls to Open-Meteo APIs
+
+---
+
+## 🗺️ Roadmap
+
+See [roadmap.md](roadmap.md) for planned enhancements, including aviation weather (METAR/TAF), hourly forecasts, license-specific safety rules, and a future FastAPI/Web UI.
