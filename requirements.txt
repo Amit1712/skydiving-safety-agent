@@ -3,3 +3,4 @@ rich>=13.0.0
 python-dotenv>=1.0.0
 requests>=2.31.0
 astral>=3.2
+PyYAML>=6.0.0

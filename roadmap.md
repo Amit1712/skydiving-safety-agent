@@ -28,11 +28,12 @@ This roadmap outlines the planned future enhancements for the Skydiving Safety A
 
 ---
 
-## 🪂 Phase 3: Dynamic Safety Rules & License Support
-- [ ] **Multi-License Support:**
+## 🪂 Phase 3: Dynamic Safety Rules & License Support (Completed ✅)
+- [x] **Multi-License Support:**
   - Differentiate safety limits for AFF Students, License A/B, License C/D, and Tandem Instructors.
-- [ ] **Custom Dropzone Rules Engine (`config.yaml`):**
-  - Allow dropzones to supply custom safety limits via YAML files (e.g., local DZ canopy limits).
+  - Default to AFF student regulations when the user does not specify a license in their prompt.
+- [x] **Custom Dropzone Rules Engine (`data/safety_rules.yaml`):**
+  - Allow dropzones to supply custom safety limits via YAML overrides (e.g., local DZ canopy limits).
 
 ---
 

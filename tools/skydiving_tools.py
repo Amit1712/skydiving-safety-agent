@@ -4,6 +4,7 @@ from services.aviation_weather_service import get_aviation_weather
 from services.daylight_service import get_daylight_times, is_within_daylight
 from services.geocoding_service import get_coordinates_by_name
 from services.http_client import APIError
+from services.safety_rules_service import get_safety_limits
 from services.vmc_service import check_vmc_conditions
 from services.weather_service import get_hourly_forecast, get_weather
 
@@ -94,21 +95,32 @@ def check_jump_daylight_tool(
     jump_datetime: ISO format like '2026-09-26T15:00'.
     """
     try:
-        result = is_within_daylight(
-            latitude, longitude, jump_datetime, timezone_name
-        )
+        result = is_within_daylight(latitude, longitude, jump_datetime, timezone_name)
         return json.dumps({"status": "success", "data": result})
     except APIError as e:
         return _error_response(f"Could not verify daylight: {e!s}")
 
 
-def check_vmc_conditions_tool(latitude: float, longitude: float) -> str:
+def check_vmc_conditions_tool(
+    latitude: float,
+    longitude: float,
+    license_type: str = "",
+    dropzone_id: str = "",
+    dropzone_name: str = "",
+) -> str:
     """
     Check Visual Meteorological Conditions (VMC): cloud ceiling and visibility
-    from nearest METAR against AFF student minimums.
+    from nearest METAR against license- and dropzone-specific minimums.
+    Defaults to AFF student regulations when license_type is omitted.
     """
     try:
-        result = check_vmc_conditions(latitude, longitude)
+        result = check_vmc_conditions(
+            latitude,
+            longitude,
+            license_type=license_type or None,
+            dropzone_id=dropzone_id or None,
+            dropzone_name=dropzone_name or None,
+        )
         return json.dumps({"status": "success", "data": result})
     except APIError as e:
         return _error_response(
@@ -117,22 +129,23 @@ def check_vmc_conditions_tool(latitude: float, longitude: float) -> str:
         )
 
 
-def get_aff_student_safety_limits_tool() -> str:
-    """Get safety and wind limits specifically for AFF skydiving students."""
-    return json.dumps(
-        {
-            "status": "success",
-            "data": {
-                "max_allowed_wind_speed_kmh": 25,
-                "max_allowed_wind_speed_knots": 13.5,
-                "max_allowed_gusts_kmh": 30,
-                "max_allowed_gusts_knots": 16.2,
-                "min_cloud_ceiling_ft_agl": 3000,
-                "min_visibility_statute_miles": 3.0,
-                "note": "Students are strictly forbidden from jumping if limits are exceeded.",
-            },
-        }
+def get_safety_limits_tool(
+    license_type: str = "",
+    dropzone_id: str = "",
+    dropzone_name: str = "",
+) -> str:
+    """
+    Get wind, gust, and VMC safety limits for a jumper license level.
+    Supported licenses: aff_student (default), license_a_b, license_c_d, tandem_instructor.
+    If the user does not specify a license, AFF student regulations are applied.
+    Pass dropzone_id or dropzone_name to apply local DZ overrides from safety_rules.yaml.
+    """
+    result = get_safety_limits(
+        license_type=license_type or None,
+        dropzone_id=dropzone_id or None,
+        dropzone_name=dropzone_name or None,
     )
+    return json.dumps({"status": "success", "data": result})
 
 
 TOOLS_MAP = {
@@ -143,7 +156,7 @@ TOOLS_MAP = {
     "get_daylight_times_tool": get_daylight_times_tool,
     "check_jump_daylight_tool": check_jump_daylight_tool,
     "check_vmc_conditions_tool": check_vmc_conditions_tool,
-    "get_aff_student_safety_limits_tool": get_aff_student_safety_limits_tool,
+    "get_safety_limits_tool": get_safety_limits_tool,
 }
 
 TOOLS_LIST = list(TOOLS_MAP.values())

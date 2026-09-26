@@ -1,0 +1,48 @@
+# Global license-based safety limits.
+# AFF student is the default when the user does not specify a license.
+licenses:
+  aff_student:
+    label: "AFF Student"
+    max_allowed_wind_speed_kmh: 25
+    max_allowed_gusts_kmh: 30
+    min_cloud_ceiling_ft_agl: 3000
+    min_visibility_statute_miles: 3.0
+    note: "Strictest limits. Students are forbidden from jumping if limits are exceeded."
+
+  license_a_b:
+    label: "License A / B"
+    max_allowed_wind_speed_kmh: 33
+    max_allowed_gusts_kmh: 41
+    min_cloud_ceiling_ft_agl: 2500
+    min_visibility_statute_miles: 3.0
+    note: "Beginner licensed jumpers. Moderate wind tolerance with conservative VMC minimums."
+
+  license_c_d:
+    label: "License C / D"
+    max_allowed_wind_speed_kmh: 44
+    max_allowed_gusts_kmh: 52
+    min_cloud_ceiling_ft_agl: 2000
+    min_visibility_statute_miles: 3.0
+    note: "Experienced jumpers. Higher wind tolerance; still subject to dropzone-specific rules."
+
+  tandem_instructor:
+    label: "Tandem Instructor"
+    max_allowed_wind_speed_kmh: 52
+    max_allowed_gusts_kmh: 59
+    min_cloud_ceiling_ft_agl: 1500
+    min_visibility_statute_miles: 3.0
+    note: "Tandem operations. Limits assume appropriate aircraft, gear, and DZ authorization."
+
+# Per-dropzone overrides merged on top of the selected license limits.
+dropzones:
+  go-jump-dead-sea:
+    name: "Go Jump Dead Sea"
+    overrides:
+      max_allowed_wind_speed_kmh: 22
+      note: "Local DZ canopy landing area restriction — lower wind limit than standard AFF."
+
+  paradive:
+    name: "Paradive"
+    overrides:
+      max_allowed_gusts_kmh: 28
+      note: "Coastal gust management — tighter gust limit near the shoreline."

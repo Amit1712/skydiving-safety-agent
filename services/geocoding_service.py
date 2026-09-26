@@ -76,6 +76,7 @@ def _match_known_dropzone(location_name: str) -> dict[str, Any] | None:
 
     if best_match and best_score >= 0.72:
         return {
+            "dropzone_id": best_match.get("id"),
             "location_name": best_match["name"],
             "country": best_match.get("country"),
             "region": best_match.get("region"),

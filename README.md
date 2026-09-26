@@ -8,7 +8,8 @@ The agent acts as a safety officer for skydivers: it accepts weather/location pr
 
 ## ✨ Key Features
 
-* **ReAct Agent Architecture:** Uses Gemini function calling to orchestrate multi-step tools (dropzone geocoding, weather/wind lookup, METAR/TAF aviation weather, hourly forecasts, daylight checks, VMC validation, AFF student safety limits).
+* **ReAct Agent Architecture:** Uses Gemini function calling to orchestrate multi-step tools (dropzone geocoding, weather/wind lookup, METAR/TAF aviation weather, hourly forecasts, daylight checks, VMC validation, license-aware safety limits).
+* **Multi-License Safety Rules (Phase 3):** Supports AFF student, License A/B, License C/D, and tandem instructor limits. Defaults to AFF student regulations when no license is specified. Per-dropzone overrides via `data/safety_rules.yaml`.
 * **Advanced Meteorological Tools (Phase 2):** METAR/TAF via CheckWX, hourly jump-time forecasts, civil twilight/daylight verification, and cloud ceiling + visibility (VMC) checks.
 * **Improved Dropzone Geocoding:** Curated dropzone registry, OpenStreetMap/Nominatim search, and confidence-scored results.
 * **Dual Wind Units:** Wind speed and gusts reported in both km/h and knots.
@@ -122,8 +123,8 @@ The agent has access to eight function-calling tools defined in `tools/skydiving
 | `get_aviation_weather_tool` | METAR and TAF from nearest aviation station via CheckWX |
 | `get_daylight_times_tool` | Sunrise, sunset, and civil twilight for a dropzone date |
 | `check_jump_daylight_tool` | Verify a planned jump time is within civil daylight hours |
-| `check_vmc_conditions_tool` | Cloud ceiling and visibility check against AFF VMC minimums |
-| `get_aff_student_safety_limits_tool` | Return AFF student wind/gust/VMC safety thresholds |
+| `check_vmc_conditions_tool` | Cloud ceiling and visibility check against license- and dropzone-specific VMC minimums |
+| `get_safety_limits_tool` | Return wind/gust/VMC safety thresholds for a license level (defaults to AFF student) |
 
 ---
 
@@ -148,7 +149,8 @@ skydiving-safety-agent/
 │   ├── conversions.py          # km/h ↔ knots conversion helpers
 │   └── http_client.py          # Shared HTTP client with timeout and error handling
 ├── data/
-│   └── known_dropzones.json    # Curated dropzone registry for high-confidence geocoding
+│   ├── known_dropzones.json    # Curated dropzone registry for high-confidence geocoding
+│   └── safety_rules.yaml       # License-based limits and per-dropzone safety overrides
 └── tools/
     └── skydiving_tools.py      # Tool function declarations and TOOLS_MAP registry
 ```
@@ -172,9 +174,10 @@ Default settings live in `config.py`:
 * `python-dotenv` — Load `.env` configuration
 * `requests` — HTTP calls to Open-Meteo, Nominatim, and CheckWX APIs
 * `astral` — Sunrise/sunset and civil twilight calculations
+* `PyYAML` — Load license and dropzone safety rule overrides
 
 ---
 
 ## 🗺️ Roadmap
 
-See [roadmap.md](roadmap.md) for planned enhancements, including aviation weather (METAR/TAF), hourly forecasts, license-specific safety rules, and a future FastAPI/Web UI.
+See [roadmap.md](roadmap.md) for planned enhancements, including a future FastAPI/Web UI.
